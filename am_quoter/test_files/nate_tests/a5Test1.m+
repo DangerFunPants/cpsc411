@@ -1,0 +1,21 @@
+% My provided test #1
+
+/*
+    Testing a few things here.
+    Firstly, whether blocks are allocated/deallocated properly as to correct access the local var after the block
+    Secondly, weather the local var of the block takes precedence over the external var
+*/
+
+var a[1]:int;
+
+begin
+a[0] := 10;
+{
+    var a[1]:int;
+    begin
+        a[0] := 20;
+        print a[0];
+    end
+};
+print a[0];
+end

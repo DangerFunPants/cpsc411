@@ -1,0 +1,68 @@
+      LOAD_R %sp
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 1
+      LOAD_I -3
+      LOAD_I 1
+      LOAD_I 2
+      ALLOC 1
+      LOAD_R %fp
+      LOAD_R %fp
+      LOAD_R %cp
+      JUMP fn1
+      LOAD_R %fp
+      STORE_O 1
+      LOAD_R %fp
+      LOAD_O 2
+      ALLOC_S 
+      HALT
+fn1:
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 0
+      LOAD_I -1
+      LOAD_R %fp
+      LOAD_O -5
+      PRINT_I
+      LOAD_R %fp
+      LOAD_O -4
+      PRINT_I
+      LOAD_I 0
+      LOAD_R %fp
+      STORE_O -5
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC_S 
+      LOAD_R %fp
+      LOAD_O -2
+      STORE_R %fp
+      LOAD_R %sp
+      STORE_O -4
+      ALLOC -3
+      JUMP_S
+array_error:
+      LOAD_C "A"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "a"
+      PRINT_C
+      LOAD_C "y"
+      PRINT_C
+      LOAD_C " "
+      PRINT_C
+      LOAD_C "e"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "o"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "
+"
+      HALT

@@ -1,0 +1,34 @@
+% This is a single line comment.
+
+/* This is a single line block comment */
+
+/*
+
+    This is a multiline block comment
+
+*/
+
+/* 
+This is a nested single line /* BLOCK */ comment 
+/* More nesting /* more Nesting */ nesting */
+*/
+
+/* 
+    This is a test of comment precedence % */
+*/
+
+
+/* 
+    The following should not generate an error during lexing as it is a perfectly valid series of tokens.
+    However, it should indeed generate an error during the parsing phase. 
+*/
+
+*/
+
+begin
+
+x:=(1+2);
+
+print x;
+
+end

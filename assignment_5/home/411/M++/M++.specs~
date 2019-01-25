@@ -1,0 +1,500 @@
+/* M++  a grammar for an extended M+- (Update for m+- MArch 12, 2003)
+
+
+   (1) Modified on 13 March 2003:
+       Fei Goa: argument_list is not defined!
+       Fixed.
+
+   =========================================================== */
+ 
+prog -> block.
+
+block -> declarations program_body.
+
+declarations -> declaration SEMICOLON declarations
+              |.
+
+declaration -> var_declaration
+             | fun_declaration
+             | data_declaration.
+
+var_declaration -> VAR ID array_dimensions COLON type.
+
+array_dimensions -> SLPAR expr SRPAR array_dimensions
+             |.
+
+fun_declaration -> FUN ID param_list COLON type  
+                                            CLPAR fun_block CRPAR.
+
+fun_block -> declarations fun_body.
+
+param_list -> LPAR parameters RPAR.
+
+parameters -> basic_declaration more_parameters
+            |.
+
+more_parameters -> COMMA  basic_declaration more_parameters
+            |.
+
+basic_declaration -> ID basic_array_dimensions COLON type.
+
+basic_array_dimensions -> SLPAR SRPAR basic_array_dimensions
+             |.
+
+type -> INT
+      | REAL
+      | BOOL
+      | CHAR
+      | ID. 
+      
+data_declaration -> DATA ID EQUAL cons_declarations.
+
+cons_declarations -> cons_decl more_cons_decl.
+
+more_cons_decl -> SLASH cons_decl more_cons_decl
+                |.
+
+cons_decl -> CID OF type_list
+           | CID.
+
+type_list -> type more_type.
+
+more_type -> STAR type more_type
+           |.
+
+program_body -> BEGIN prog_stmts END.
+
+fun_body -> BEGIN prog_stmts RETURN expr SEMICOLON END.
+
+prog_stmts -> prog_stmt SEMICOLON prog_stmts
+            |.                         
+                                        
+prog_stmt -> IF expr THEN prog_stmt ELSE prog_stmt
+           | WHILE expr DO prog_stmt
+           | READ identifier
+           | identifier ASSIGN expr
+           | PRINT expr
+           | CLPAR block CRPAR
+           | CASE expr OF case_list.
+  
+identifier -> ID array_dimensions.
+         
+case_list -> case more_case.
+
+more_case -> SLASH case more_case
+          |.
+
+case -> CID var_list ARROW prog_stmt.
+
+var_list -> LPAR var_list1 RPAR
+          |.
+
+var_list1 -> ID more_var_list1.
+
+more_var_list1 -> COMMA ID more_var_list1
+                |.
+
+expr ->  expr OR bint_term
+       | bint_term.
+
+bint_term -> bint_term AND bint_factor
+           | bint_factor.
+
+bint_factor -> NOT bint_factor
+             | int_expr compare_op int_expr
+             | int_expr.
+
+compare_op -> EQUAL | LT | GT | LE |GE.
+
+int_expr -> int_expr addop int_term
+          | int_term.
+
+addop -> ADD | SUB.
+
+int_term -> int_term mulop int_factor
+          | int_factor.
+
+mulop -> MUL | DIV.
+
+int_factor -> LPAR expr RPAR
+             | SIZE LPAR ID basic_array_dimensions RPAR
+            | FLOAT LPAR expr RPAR
+            | FLOOR LPAR expr RPAR
+            | CEIL LPAR expr RPAR
+            | ID modifier_list
+            | CID argument_list
+            | IVAL
+            | RVAL
+            | BVAL
+            | SUB int_factor.
+
+argument_list -> LPAR arguments RPAR
+
+modifier_list -> LPAR arguments RPAR
+           | array_dimensions.
+
+arguments -> expr more_arguments
+           |.
+
+more_arguments -> COMMA expr more_arguments
+           |.
+
+/*
+
+Terminals of m++
+----------------
+
+"+"  => ADD
+"-"  => SUB
+"*"  => MUL
+"/"  => DIV
+"=>" => ARROW
+
+"&&" => AND
+"||" => OR
+"not" => NOT
+
+"="  => EQUAL 
+"<"  => LT 
+">"  => GT 
+"=<"  => LE 
+">="  => GE
+
+":=" => ASSIGN
+
+"("   => LPAR
+")"   => RPAR
+"{"   => CLPAR
+"}"   => CRPAR
+"["   => SLPAR
+"]"   => SRPAR
+"|"   => SLASH
+
+":"  => COLON
+";"  => SEMICLON
+","  => COMMA 
+
+"if" => IF
+"then" => THEN
+"while" => WHILE
+"do" => DO
+"read" => READ
+"else" => ELSE
+"begin" => BEGIN
+"end" => END
+"print" => PRINT
+"int"   => INT
+"bool"  => BOOL
+"char"  => CHAR
+"real"  => REAL
+"var"   => VAR
+"size" => SIZE
+"float" => FLOAT
+"floor" => FLOOR
+"ceil"  => CEIL
+"fun"   => FUN
+"return" => RETURN
+
+"#"[_{digit}{alpha}]*     => CID         (constructor)
+{alpha}[_{digit}{alpha}]* => ID          (identifier)
+{digit}+ => IVAL                         (integer)
+{digit}*.{digit}+ => RVAL                         (real)
+"false" => BVAL                          (booleans)
+"true" => BVAL
+
+where 
+
+alpha = [a-zA-Z]
+digit = [0-9]
+
+
+Program comments:
+----------------
+
+M++ has two types of comments: multi-line comments 
+    /*  comment  */
+and one line comments
+    %   comment
+
+The multi-line comments allow nesting of comments ...
+
+
+Commentary on the M++ grammar
+-----------------------------
+(Commentary NOT updated for changes. See commentary on M+- grammar as well.)
+
+A M++ program is a block that is a list of declarations followed by 
+a progam body
+
+============================================================
+prog -> block
+
+block -> declarations program_body
+============================================================
+
+The decarations can either be function declarations, variable declarations,
+or data declarations: each declaration is terminated by a semi-colon.
+
+============================================================ 
+decarations -> declaration SEMICOLON declarations
+             |.
+
+declaration -> var_declaration
+             | fun_declaration
+             | data_declaration.
+============================================================
+
+A variable declaration is preceded by the reserved word "var" and 
+declares an identifier whose type is attached by  a colon followed by the 
+type.  M++ only has only three built-in types: integers, booleans, and 
+characters.  However, M++ allow the user to define algebraic datatypes 
+such as list and tree.  
+
+A function declaration is preceded by the reserved word "fun" and consists 
+of an identifier followed by an argument list with a type attachment followed 
+by the function block.  This consist of a declaration list followed 
+by the function body enclosed in curly parentheses.  The argument list 
+consist of a (possibly empty) list of variable declarations separated by 
+commas.
+
+One can also declare an algebraic datatype.  This introduces a new type into 
+the program for which variables can be subsequently (and simulaneously) 
+declared.  This implies two passes must be now made over the declaration 
+list: to pick up the new types and then to check that variables are correctly 
+typed.
+
+A function can call any function which has already been declared 
+or is declared in the same block.  Thus, (mutually) recursive functions 
+are permissible. Functions are also allowed to use variables defined in 
+the same block.
+
+A variable in an M++ program can only be legally used if it has 
+been declared in an enclosing block or function.  The same is also holds 
+true for functions.  
+
+Thus M++ supports local data, function and variable definitions ....
+
+============================================================
+var_declaration -> VAR ID array_dimensions COLON type.
+
+array_dimensions -> SLPAR expr SRPAR array_dimensions
+             |.
+
+fun_declaration -> FUN ID param_list COLON type  
+                                            CLPAR fun_block CRPAR.
+
+fun_block -> declarations fun_body.
+
+param_list -> LPAR parameters RPAR.
+
+parameters -> basic_declaration more_parameters
+            |.
+
+more_parameters -> COMMA  basic_declaration more_parameters
+            |.
+
+basic_declaration -> ID basic_array_dimensions COLON type.
+
+basic_array_dimensions -> SLPAR SRPAR basic_array_dimensions
+             |.
+
+type -> INT | BOOL | CHAR | ID
+============================================================
+The datatype declarations allow the introduction of 
+(mutually recursive) monomorphically typed polynomial 
+algebraic datatypes.  The constructors are signaled by 
+starting with a "#" as in "#CONS" or "#zero":
+============================================================
+data_declaration -> DATA ID EQUALS cons_declarations.
+
+cons_declarations -> cons_decl more_cons_decl.
+
+more_cons_decl -> SLASH cons_decl more_cons_decl
+                |.
+
+cons_decl -> CID OF type_list.
+
+type_list -> type more_type.
+
+more_type -> MUL type more_type
+           |.
+============================================================
+The difference between a program body and a function body is that the 
+function body MUST end with a return statement.  Otherwise both consist of
+a series of program statements separated by semi-colons.  Program statements 
+include conditional ("if ... then ... else ...") statements, while loops,
+read statements, assignments, print statements, and blocks. Notice that a 
+block permits the declaration of local variables and functions and is 
+delimited by curly braces.
+
+Notice the program statements now include a case statement to 
+allow the decomposition of datatypes.
+============================================================
+program_body -> BEGIN prog_stmts END
+
+fun_body -> BEGIN prog_stmts RETURN expr SEMICOLON END.
+
+prog_stmts -> prog_stmt SEMICOLON prog_stmts
+            |.                         
+                                        
+prog_stmt -> IF expr THEN prog_stmt ELSE prog_stmt
+           | WHILE expr DO prog_stmt
+           | READ identifier
+           | identifier ASSIGN expr
+           | PRINT expr
+           | CLPAR block CRPAR
+           | CASE expr OF CLPAR case_list CRPAR.
+
+identifier -> ID array_dimensions.
+============================================================
+
+There are three kinds of expression in M++: integer/real expressions, 
+boolean expressions, and datatype expressions.  The syntax cannot 
+distinguish these expressions and thus type checking is neccessary. 
+
+Boolean expressions are used in conditional and while statements. 
+Boolean expressions include the ability to compare integer 
+expressions.  Datatype expressions are introduced by applying 
+constructors to data.
+
+
+============================================================
+expr ->  expr OR bint_term
+       | bint_term.
+
+bint_term -> bint_term AND bint_factor
+           | bint_factor.
+
+bint_factor -> NOT bint_factor
+             | int_expr compare_op int_expr
+             | int_expr.
+
+compare_op -> EQUAL | LT | GT | LE |GE.
+
+int_expr -> int_expr addop int_term
+          | int_term.
+
+addop -> ADD | SUB.
+
+int_term -> int_term mulop int_factor
+          | int_factor.
+
+mulop -> MUL | DIV.
+
+int_factor -> LPAR expr RPAR
+            | SIZE LPAR ID basic_array_dimensions RPAR
+            | FLOAT LPAR expr RPAR
+            | FLOOR LPAR expr RPAR
+            | CEIL LPAR expr RPAR
+            | ID modifier_list
+            | CID argument_list
+            | IVAL
+            | RVAL
+            | BVAL
+            | SUB int_factor.
+
+============================================================
+
+An argument list is a list of expressions.  Clearly these must 
+be correctly typed.
+
+============================================================
+
+modifier_list -> LPAR arguments RPAR
+           | array_dimensions.
+
+arguments -> expr more_arguments
+           |.
+
+more_arguments -> COMMA expr more_arguments
+           |.
+============================================================
+
+
+
+
+
+EXAMPLE M++ PROGRAM
+===================
+(Does not use any M+- features)
+
+The following is an example program:
+
+
+/* 
+ *   Program for sorting lists of integers.
+ *   
+ */
+ 
+ 
+  
+ data listint = #CONS of int * listint
+              | #NIL ;
+ 
+ var xs: listint;
+ var a: bool;
+ 
+ fun readints():listint
+     { var x:int; 
+       var zL:listint;
+       begin 
+         read x;
+         if x = 0 then zL:= #NIL()
+                  else zL:= #CONS(x,readints());
+         return zL;
+       end };
+ 
+ fun writeints(zL:listint):bool
+     { var a: bool;
+       begin
+         case zL of    #NIL => a:= true
+                     | #CONS(x,yL) => 
+            { begin 
+                print x;
+                a:= writeints(yL);
+              end  
+            };
+       return a;
+     end };
+ 
+ fun merge(x:listint,y:listint):listint
+     { var z:listint;
+       begin
+         case x of #NIL => z:= y
+                 | #CONS(xh,xt) =>
+             { begin 
+                case y of #NIL => z:= x
+                        | #CONS(yh,yt) =>
+                if xh<yh then z:= #CONS(xh,merge(xt,y))
+                         else z:= #CONS(yh,merge(x,yt));
+               end };
+         return z;
+      end };
+      
+ fun odd(x:listint):listint
+     { var zL:listint;
+       begin 
+         case x of #NIL => zL:= x 
+                 | #CONS(z,tx) => zL:= even(tx);
+         return zL;
+       end };
+       
+ fun even(x:listint):listint
+     { var z:listint;
+       begin 
+         case x of #NIL => z:= x 
+                 | #CONS(x,tx) => z:= #CONS(x,odd(tx));
+         return z;
+       end };
+       
+ fun quicksort(z:listint):listint
+     { begin 
+         return merge(quicksort(odd(z)),quicksort(even(z))); 
+       end };
+
+begin 
+   xs:= readints();
+   xs:= quicksort(xs);
+   a:= writeints(xs);
+end
+          

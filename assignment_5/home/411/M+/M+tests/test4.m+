@@ -1,0 +1,7 @@
+var x:int;
+var y:int;
+fun f(a:int,b:int):int
+   {begin return -1; end};
+begin
+   f := f(y,x); print x;
+end

@@ -1,0 +1,24 @@
+% My provided test #5
+
+/*
+    The following tests returing an array element of an array passed to a function.
+    Input asks for a real number which will be set in the array and then returned.
+*/
+
+fun arrayFunc(arr[]:real):real
+{
+    begin
+        return arr[s - 1];
+    end
+};
+
+var a[1]:real;
+var x:real;
+var s:int;
+
+begin
+    read x;
+    s := size(a);
+    a[s - 1] := x;
+    print arrayFunc(a);
+end

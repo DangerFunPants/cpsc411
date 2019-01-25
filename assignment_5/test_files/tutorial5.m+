@@ -1,0 +1,31 @@
+/*
+	Derived some an example in
+	the extended language's spec
+
+	... custom data types.
+
+	Updated to fix case construct
+*/
+
+data intlist 	= #LAST of int
+		| #CONS of int * intlist;
+
+var L:intlist;
+
+fun printList (list : intlist) : int {
+	var y: int;
+
+	case list of 
+	{
+		#LAST (n) => { y := n; }
+		| #CONS (x,xs) => { y:= x; print printList (xs); }
+	};
+
+	return y;
+};
+
+begin
+L:= #CONS(1,#CONS(2,#CONS(3,#LAST(4))));
+
+print printList(L);
+end

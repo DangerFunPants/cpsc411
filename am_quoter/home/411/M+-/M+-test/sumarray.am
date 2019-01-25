@@ -1,0 +1,272 @@
+      LOAD_R %sp
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 1
+      LOAD_I -3
+      READ_I
+      LOAD_R %fp
+      STORE_O 1
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC 1
+      LOAD_R %fp
+      LOAD_R %fp
+      LOAD_R %cp
+      JUMP fn1
+      PRINT_F
+      LOAD_R %fp
+      LOAD_O 2
+      ALLOC_S 
+      HALT
+fn1:
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 2
+      LOAD_I -3
+      LOAD_R %fp
+      LOAD_O -4
+      LOAD_R %sp
+      LOAD_R %fp
+      STORE_O 1
+      LOAD_R %sp
+      LOAD_O 0
+      LOAD_R %sp
+      LOAD_O 0
+      APP NEG
+      LOAD_I -1
+      LOAD_R %fp
+      LOAD_O 3
+      APP ADD
+      APP ADD
+      LOAD_R %fp
+      STORE_O 3
+      ALLOC_S 
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC 1
+      LOAD_R %fp
+      LOAD_R %fp
+      LOAD_R %cp
+      JUMP fn2
+      PRINT_B
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC 1
+      LOAD_R %fp
+      LOAD_R %fp
+      LOAD_R %cp
+      JUMP fn3
+      LOAD_R %fp
+      STORE_O -4
+      LOAD_R %fp
+      LOAD_O 3
+      ALLOC_S 
+      LOAD_R %fp
+      LOAD_O -2
+      STORE_R %fp
+      LOAD_R %sp
+      STORE_O -3
+      ALLOC -2
+      JUMP_S
+fn2:
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 1
+      LOAD_I -2
+      LOAD_I 0
+      LOAD_R %fp
+      STORE_O 1
+whl4:
+      LOAD_R %fp
+      LOAD_O 1
+      LOAD_R %fp
+      LOAD_O -4
+      LOAD_O 0
+      APP LT
+      JUMP_C whl5
+      LOAD_R %fp
+      ALLOC 1
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 0
+      LOAD_I -2
+      READ_F
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O -4
+      LOAD_I 1
+      LOAD_I 1
+      LOAD_R %sp
+      LOAD_O -2
+      LOAD_O 0
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O 1
+      LOAD_R %sp
+      LOAD_O -1
+      LOAD_R %sp
+      LOAD_O -1
+      APP GT
+      JUMP_C array_error
+      LOAD_R %sp
+      LOAD_O 0
+      LOAD_I 0
+      APP GE
+      JUMP_C array_error
+      LOAD_R %sp
+      LOAD_O -2
+      APP MUL
+      LOAD_R %sp
+      LOAD_O -3
+      APP ADD
+      LOAD_R %sp
+      STORE_O -3
+      APP MUL
+      ALLOC -1
+      STORE_OS 
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O 1
+      LOAD_I 1
+      APP ADD
+      LOAD_R %fp
+      LOAD_O -1
+      STORE_O 1
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC_S 
+      STORE_R %fp
+      JUMP whl4
+whl5:
+      LOAD_B true
+      LOAD_R %fp
+      STORE_O -4
+      LOAD_R %fp
+      LOAD_O 2
+      ALLOC_S 
+      LOAD_R %fp
+      LOAD_O -2
+      STORE_R %fp
+      LOAD_R %sp
+      STORE_O -3
+      ALLOC -2
+      JUMP_S
+fn3:
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 2
+      LOAD_I -3
+      LOAD_I 0
+      LOAD_R %fp
+      STORE_O 1
+      LOAD_F 0.0
+      LOAD_R %fp
+      STORE_O 2
+whl6:
+      LOAD_R %fp
+      LOAD_O 1
+      LOAD_R %fp
+      LOAD_O -4
+      LOAD_O 0
+      APP LT
+      JUMP_C whl7
+      LOAD_R %fp
+      ALLOC 1
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 0
+      LOAD_I -2
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O 2
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O -4
+      LOAD_I 1
+      LOAD_I 1
+      LOAD_R %sp
+      LOAD_O -2
+      LOAD_O 0
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O 1
+      LOAD_R %sp
+      LOAD_O -1
+      LOAD_R %sp
+      LOAD_O -1
+      APP GT
+      JUMP_C array_error
+      LOAD_R %sp
+      LOAD_O 0
+      LOAD_I 0
+      APP GE
+      JUMP_C array_error
+      LOAD_R %sp
+      LOAD_O -2
+      APP MUL
+      LOAD_R %sp
+      LOAD_O -3
+      APP ADD
+      LOAD_R %sp
+      STORE_O -3
+      APP MUL
+      ALLOC -1
+      LOAD_OS 
+      APP ADD_F
+      LOAD_R %fp
+      LOAD_O -1
+      STORE_O 2
+      LOAD_R %fp
+      LOAD_O -1
+      LOAD_O 1
+      LOAD_I 1
+      APP ADD
+      LOAD_R %fp
+      LOAD_O -1
+      STORE_O 1
+      LOAD_R %fp
+      LOAD_O 1
+      ALLOC_S 
+      STORE_R %fp
+      JUMP whl6
+whl7:
+      LOAD_R %fp
+      LOAD_O 2
+      LOAD_R %fp
+      STORE_O -4
+      LOAD_R %fp
+      LOAD_O 3
+      ALLOC_S 
+      LOAD_R %fp
+      LOAD_O -2
+      STORE_R %fp
+      LOAD_R %sp
+      STORE_O -3
+      ALLOC -2
+      JUMP_S
+array_error:
+      LOAD_C "A"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "a"
+      PRINT_C
+      LOAD_C "y"
+      PRINT_C
+      LOAD_C " "
+      PRINT_C
+      LOAD_C "e"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "o"
+      PRINT_C
+      LOAD_C "r"
+      PRINT_C
+      LOAD_C "
+"
+      HALT

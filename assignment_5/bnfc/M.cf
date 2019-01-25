@@ -1,0 +1,292 @@
+{-
+================================================================================
+COMMENTS
+================================================================================
+-}
+
+comment "//" ;
+comment "%" ;
+comment "/*" "*/" ;
+
+{-
+================================================================================
+PROGRAM INSTANTIATION
+================================================================================
+-}
+
+Prog_P0 . Prog ::= Block ;
+Block_P0 . Block ::= Declarations ProgramBody ;
+
+{-
+================================================================================
+TOP LEVEL DECLARATIONS
+================================================================================
+-}
+
+Declarations_P0 . Declarations ::= [Declaration] ; terminator Declaration ";" ;
+
+Declaration_P0 . Declaration ::= VarDeclaration ;
+Declaration_P1 . Declaration ::= FunDeclaration ;
+Declaration_P2 . Declaration ::= DataDeclaration ;
+
+{-
+================================================================================
+VARIABLE DECLARATIONS
+================================================================================
+-}
+
+VarDeclaration_P0 . VarDeclaration ::= VAR VarSpecs COLON Type;
+
+VarSpecs_P0 . VarSpecs ::= VarSpec MoreVarSpecs ;
+
+MoreVarSpecs_P0 . MoreVarSpecs ::= "," VarSpec MoreVarSpecs ;
+MoreVarSpecs_P1 . MoreVarSpecs ::= ;
+
+VarSpec_P0 . VarSpec ::= ID ArrayDimensions ; 
+
+{-
+================================================================================
+PRIMITIVE TYPES
+================================================================================
+-}
+
+rules Type ::= INT | REAL | BOOL | CHAR | ID ;
+
+{-
+================================================================================
+ARRAY DIMENSIONS
+================================================================================
+-}
+
+ArrayDimensions_P0 . ArrayDimensions ::= [ArrDims] ;
+
+ArrDims_P0 . ArrDims ::= SLPAR Expr SRPAR ; separator ArrDims "" ;
+
+BasicArrayDimensions_P0 . BasicArrayDimensions ::= [EmptyArrDims] ; 
+EmptyArrDims_P0 . EmptyArrDims ::= SLPAR SRPAR ; separator EmptyArrDims "" ;
+
+{-
+================================================================================
+FUNCTION DECLARATION
+================================================================================
+-}
+
+FunDeclaration_P0 . FunDeclaration ::= FUN ID ParamList COLON Type CLPAR FunBlock CRPAR ;
+FunBlock_P0 . FunBlock ::= Declarations FunBody ;
+
+FunBody_P0 . FunBody ::= BEGIN ProgStmts RETURN Expr ";" END ;
+FunBody_P1 . FunBody ::= ProgStmts RETURN Expr ";" ;
+
+ParamList_P0 . ParamList ::= LPAR Parameters RPAR ;
+
+Parameters_P0 . Parameters ::= BasicDeclaration MoreParameters ;
+Parameters_P1 . Parameters ::= ;
+
+MoreParameters_P0 . MoreParameters ::= "," BasicDeclaration MoreParameters ;
+MoreParameters_P1 . MoreParameters ::= ; 
+
+BasicDeclaration_P0 . BasicDeclaration ::= VarIdentList COLON Type ;
+
+VarIdentList_P0 . VarIdentList ::= VarIdent MoreVarIdent ;
+
+VarIdent_P0 . VarIdent ::= ID BasicArrayDimensions ;
+
+MoreVarIdent_P0 . MoreVarIdent ::= "," VarIdent MoreVarIdent ;
+MoreVarIdent_P1 . MoreVarIdent ::= ;
+
+{-
+================================================================================
+DATA DECLARATION
+================================================================================
+-}
+
+DataDeclaration_P0 . DataDeclaration ::= DATA ID EQUAL ConsDeclarations ;
+
+ConsDeclarations_P0 . ConsDeclarations ::= ConsDeclaration MoreConsDeclaration ;
+
+MoreConsDeclaration_P0 . MoreConsDeclaration ::= SLASH ConsDeclaration MoreConsDeclaration ;
+MoreConsDeclaration_P1 . MoreConsDeclaration ::= ;
+
+ConsDeclaration_P0 . ConsDeclaration ::= CID OF TypeList ;
+ConsDeclaration_P1 . ConsDeclaration ::= CID ;
+
+TypeList_P0 . TypeList ::= Type MoreType ;
+
+MoreType_P0 . MoreType ::= MUL Type MoreType ;
+MoreType_P1 . MoreType ::= ;
+
+{-
+================================================================================
+BLOCKS
+================================================================================
+-}
+
+ProgramBody_P0 . ProgramBody ::= BEGIN ProgStmts END ;
+ProgramBody_P1 . ProgramBody ::= ProgStmts ;
+
+{-
+================================================================================
+STATEMENTS
+================================================================================
+-}
+
+ProgStmts_P0 . ProgStmts ::= [ProgStmt] ; terminator ProgStmt ";" ;
+
+ProgStmt_P0 . ProgStmt ::= IF Expr THEN ProgStmt ELSE ProgStmt ; 
+ProgStmt_P1 . ProgStmt ::= WHILE Expr DO ProgStmt ;
+ProgStmt_P2 . ProgStmt ::= READ Identifier ;
+ProgStmt_P3 . ProgStmt ::= Identifier ASSIGN Expr ; 
+ProgStmt_P4 . ProgStmt ::= PRINT Expr ; 
+ProgStmt_P5 . ProgStmt ::= CLPAR Block CRPAR ; 
+ProgStmt_P6 . ProgStmt ::= CASE Expr OF CLPAR CaseList CRPAR ;
+
+Identifier_P0 . Identifier ::= ID ArrayDimensions ;
+
+{-
+================================================================================
+CASE STATEMENTS
+================================================================================
+-}
+
+CaseList_P0 . CaseList ::= Case MoreCase ;
+
+MoreCase_P0 . MoreCase ::= SLASH Case MoreCase ;
+MoreCase_P1 . MoreCase ::= ;
+
+Case_P0 . Case ::= CID VarList ARROW ProgStmt ;
+
+VarList_P0 . VarList ::= LPAR VarListPrime RPAR ;
+VarList_P1 . VarList ::= ;
+
+VarListPrime_P0 . VarListPrime ::= ID MoreVarListPrime ;
+
+MoreVarListPrime_P0 . MoreVarListPrime ::= "," ID MoreVarListPrime ;
+MoreVarListPrime_P1 . MoreVarListPrime ::= ;
+
+{-
+================================================================================
+EXPRESSIONS
+================================================================================
+-}
+
+Expr_P0 . Expr ::= Expr OR BintTerm ; 
+Expr_P1 . Expr ::= BintTerm ;
+
+BintTerm_P0 . BintTerm ::= BintTerm AND BintFactor ;
+BintTerm_P1 . BintTerm ::= BintFactor ;
+
+BintFactor_P0 . BintFactor ::= NOT BintFactor ;
+BintFactor_P1 . BintFactor ::= IntExpr CompareOp IntExpr ;
+BintFactor_P2 . BintFactor ::= IntExpr ; 
+
+CompareOp_P0 . CompareOp ::= EQUAL ;
+CompareOp_P1 . CompareOp ::= LESST ;
+CompareOp_P2 . CompareOp ::= GREATERT ;
+CompareOp_P3 . CompareOp ::= LE ; 
+CompareOp_P4 . CompareOp ::= GE ;
+
+IntExpr_P0 . IntExpr ::= IntExpr AddOp IntTerm ; 
+IntExpr_P1 . IntExpr ::= IntTerm ;
+
+AddOp_P0 . AddOp ::= ADD ;
+AddOp_P1 . AddOp ::= SUB ;
+
+IntTerm_P0 . IntTerm ::= IntTerm MulOp IntFactor ;
+IntTerm_P1 . IntTerm ::= IntFactor ;
+
+MulOp_P0 . MulOp ::= MUL ;
+MulOp_P1 . MulOp ::= DIV ;
+
+IntFactor_P0 . IntFactor ::= LPAR Expr RPAR ; 
+IntFactor_P1 . IntFactor ::= SIZE LPAR ID BasicArrayDimensions RPAR ;
+IntFactor_P2 . IntFactor ::= FLOAT LPAR Expr RPAR ;
+IntFactor_P3 . IntFactor ::= FLOOR LPAR Expr RPAR ;
+IntFactor_P4 . IntFactor ::= CEIL LPAR Expr RPAR ;
+IntFactor_P5 . IntFactor ::= ID ModifierList ;
+IntFactor_P6 . IntFactor ::= IVAL ;
+IntFactor_P7 . IntFactor ::= RVAL ;
+IntFactor_P8 . IntFactor ::= BVAL ;
+IntFactor_P9 . IntFactor ::= SUB IntFactor ;
+IntFactor_P10 . IntFactor ::= CID ConsArgumentList ;
+IntFactor_P11 . IntFactor ::= CVAL ;
+
+ModifierList_P0 . ModifierList ::= FunArgumentList ;
+ModifierList_P1 . ModifierList ::= ArrayDimensions ;
+
+FunArgumentList_P0 . FunArgumentList ::= LPAR Arguments RPAR ;
+
+Arguments_P0 . Arguments ::= [Expr] ; separator Expr "," ;
+
+ConsArgumentList_P0 . ConsArgumentList ::= FunArgumentList ;
+ConsArgumentList_P1 . ConsArgumentList ::= ;
+
+{-
+================================================================================
+M TERMINALS
+================================================================================
+-}
+
+token VAR {"var"} ;
+token COLON {":"} ;
+token INT {"int"} ;
+token REAL {"real"} ;
+token BOOL {"bool"} ;
+token CHAR {"char"} ;
+token SLPAR {"["} ;
+token SRPAR {"]"} ;
+token FUN {"fun"} ;
+token LPAR {"("} ;
+token RPAR {")"} ;
+token BEGIN {"begin"} ;
+token END {"end"} ;
+token RETURN {"return"} ;
+token IF {"if"} ;
+token THEN {"then"} ;
+token ELSE {"else"} ;
+token WHILE {"while"} ;
+token READ {"read"} ;
+token ASSIGN {":="} ;
+token PRINT {"print"} ;
+token DO {"do"} ;
+token OR {"||"} ;
+token AND {"&&"} ; 
+token NOT {"not"} ;
+token EQUAL {"="} ;
+token LESST {"<"} ;
+token GREATERT {">"} ;
+token LE {"=<"} ;
+token GE {">="} ; 
+
+
+token SUB {"-"} ;
+token ADD {"+"} ;
+token MUL {"*"} ;
+token DIV {"/"} ;
+
+token CLPAR {"{"} ;
+token CRPAR {"}"} ;
+token SIZE {"size"} ;
+token FLOOR {"floor"} ;
+token CEIL {"ceil"} ;
+token FLOAT {"float"} ;
+
+token DATA {"data"} ;
+token OF {"of"} ;
+
+token CASE {"case"} ;
+token ARROW {"=>"} ;
+token SLASH {"|"} ;
+
+{-
+================================================================================
+CLASS TERMINALS
+================================================================================
+-}
+
+token IVAL (digit)(digit)* ;
+token RVAL (digit*){"."}(digit)(digit)* ;
+token BVAL {"true"}|{"false"} ;
+token CVAL ('\'')(letter)('\'') ;
+
+token CID ('#')(digit | letter | '_')* ;
+token ID (letter)('_' | digit | letter)* ;

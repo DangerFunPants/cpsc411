@@ -1,0 +1,25 @@
+/*
+    This program computes mersenne numbers. The mersenne numbers are defined as:
+
+                        M(n) = n^2 - 1
+    
+    for n \epsilon N
+*/
+
+begin
+
+read n;
+
+% first compute 2^n
+
+n2:=1;
+
+while n do
+    begin
+        n2:=n2*2;
+        n:=n-1;
+    end;
+
+print (n2-1); % then subtract 1
+
+end

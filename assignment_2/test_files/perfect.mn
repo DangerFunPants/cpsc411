@@ -1,0 +1,45 @@
+/*
+    This program reads in a number and outputs 1 in the case that the number 
+    is a perfect number and 0 otherwise.
+
+    A perfect number, n, is a number such that: 
+
+            ( sum { x | x /= n and n % x == 0 } ) == n
+    
+    in other words, all numbers that are equal to the sum of their proper 
+    divisors. 
+*/
+
+
+
+begin
+    read n;
+    x:=2;
+    sum:=1;
+
+    while (n-x) do
+        begin
+            quo:=n/x;
+            check:=x*quo;
+            notFactor:=n-check;
+
+            if notFactor then
+                begin
+                end
+            else
+                begin
+                    sum:=sum+x;
+                end;
+
+            x:=x+1;
+        end;
+
+    if (n-sum) then
+        begin
+            print 0;
+        end
+    else
+        begin
+            print 1;
+        end;
+end

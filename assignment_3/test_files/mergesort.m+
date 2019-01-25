@@ -1,0 +1,64 @@
+/* 
+ *   Program for sorting lists of integers.
+ *   
+ */
+ 
+ 
+ data listint = #CONS of int * listint
+               | #NIL ;
+ 
+ var xs: listint;
+ var a: bool;
+ 
+ fun readints():listint
+     { var x:int; 
+       var zL:listint;
+       read x;
+       if x = 0 then zL:= #NIL()
+                else zL:= #CONS(x,readints());
+       return zL; };
+ 
+ fun writeints(zL:listint):bool
+     { var a: bool;
+       case zL of  { #NIL => a:= true
+                   | #CONS(x,yL) => { print x;
+                                      a:= writeints(yL); }};
+       return a; };
+ 
+ fun merge(x:listint,y:listint):listint
+     { var z:listint;
+       case x of { #NIL => z:= y
+                 | #CONS(xh,xt) =>
+             { case y of { #NIL => z:= x
+                         | #CONS(yh,yt) =>
+                if xh<yh then z:= #CONS(xh,merge(xt,y))
+                         else z:= #CONS(yh,merge(x,yt)) };
+             } };
+       return z; };
+     
+ fun odd(x:listint):listint
+     { var zL:listint;
+       case x of { #NIL => zL:= #NIL() 
+                 | #CONS(z,tx) => zL:= even(tx) };
+       return zL; };
+       
+ fun even(x:listint):listint
+     { var z:listint;
+       case x of { #NIL => z:= #NIL() 
+                 | #CONS(x,tx) => z:= #CONS(x,odd(tx)) };
+       return z; };
+       
+ fun quicksort(z:listint):listint
+     { var v:listint;
+       case z of { #NIL => v:= #NIL
+                 | #CONS(a,b) => 
+                        case b of { #NIL => v:= #CONS(a,#NIL())
+                                  | #CONS(u,w) =>
+                        v:= merge(quicksort(odd(z)),quicksort(even(z)))}};
+         return v; };
+
+begin 
+   xs:= readints();
+   a:= writeints(quicksort(xs));
+end
+          

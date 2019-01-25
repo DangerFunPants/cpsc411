@@ -1,0 +1,15 @@
+fun a(x:int):bool
+   { fun a(x:bool):int
+      { var z:int;
+        if x then z:= 1 else z:= -1;
+        return z;
+      };
+      return a(x<1)=1;
+    };
+fun b(x,y,z:int):int
+   { var w:int;
+     if a(x) then w:=y else w:=z;
+     return w;
+   };
+   
+   print b(2,13,7);

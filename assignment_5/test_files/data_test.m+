@@ -1,0 +1,36 @@
+
+
+var z : int;
+fun testFun () : int
+{
+    fun localFun () : real
+    {
+        return rVal;
+    };
+
+    var rVal : real;
+    
+
+    vec := #cons(5, #nil);
+    vec := #cons(6, vec);
+    vec := #cons(7, vec);
+    vec := #cons(8, vec);
+    vec := #cons(9, vec);
+
+    t := 5;
+    return 5;
+};
+
+data IntList 
+    = #nil
+    | #cons of int * IntList;
+
+var t : int;
+var x : int;
+var vec : IntList;
+
+
+t := testFun();
+z := testFun();
+x := testFun();
+

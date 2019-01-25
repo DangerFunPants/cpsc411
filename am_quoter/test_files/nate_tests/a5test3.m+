@@ -1,0 +1,14 @@
+% My provided test #3
+
+/*
+    The following is quite basic.
+    Testing whether the size of various dimensions of an array can be correctly extracted.
+*/
+
+var a[5][6][7]:int;
+
+begin
+    print size(a);
+    print size(a[]);
+    print size(a[][]);
+end

@@ -1,0 +1,23 @@
+var x : int;
+fun f( y: int, x : int) : int
+{
+	var x, a[y][x] : int;
+	fun g(a[][] : int, b : int) : int
+	{
+		var y, i, j : int;
+		begin
+			a[i][j] := f(x,y);
+			return 1;
+		end
+	};
+
+	begin
+		return 5;
+	end
+};
+
+var v : bool;
+
+begin 
+end
+	

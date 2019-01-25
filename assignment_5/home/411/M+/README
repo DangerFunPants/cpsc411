@@ -1,0 +1,34 @@
+
+NOTE: The m compiler handles M programs which do not have arrays or 
+      datatypes.
+
+
+To run the m+ compiler you need to set the following alias
+
+alias m+  '/usr/bin/sml @SMLload=/home/411/M+/m+.x86-linux'
+
+
+The m+ compiler can be called in the following modes:
+
+(i) m+ <filename1> <filename2>
+
+This compiles the m+ program in <filename1> and APPENDS the code to 
+<filename2>, if this file does not exist it is created.  So it is 
+important to realize that if it exists already you will not get the 
+effect you want!
+
+(ii) m+ <filename>
+
+This compiles the m+ program in <filename> and APPENDS the code to 
+the output file who name is determined as follows:
+    (a) if <filename> = <file>.m+ then the output file is <file>.am
+    (b) otherwise the output file is <filename>.am.  
+
+
+BEWARE: the compiler has minimal error handling: I just threw it 
+        together so you could see the sort of output expected.
+
+EXAMPLES: Examples of m programs are in the directory m+tests.
+          If you develop any interesting examples of m+ programs 
+          (to test for interesting errors or to do neat things) 
+          please let me know.

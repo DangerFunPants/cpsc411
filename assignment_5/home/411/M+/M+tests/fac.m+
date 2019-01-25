@@ -1,0 +1,16 @@
+/*  
+      To compute the factorial of a number
+ */
+
+         var x:int;
+         fun fac(a:int):int
+         { var z:int;
+           begin
+              if a=0 then z:= 1
+              else z:= a * fac(a-1);
+              return z;
+           end };
+         begin 
+            read x;
+            print fac(x);
+         end

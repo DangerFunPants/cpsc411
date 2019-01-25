@@ -1,0 +1,23 @@
+% My provided test #4
+
+/*
+    The following tests two things.
+    Firstly, weather a variable from another scope can be properly used when defining the dimensions of an array in a new scope.
+    Secondly, weather than array has correct dimensions by setting the last element of that array and printing it.
+*/
+
+var x:int;
+
+begin
+    read x;
+    {
+        var a[x]:int;
+        var y:int;
+
+        begin
+            read y;
+            a[x - 1] := y;
+            print a[x - 1];
+        end
+    };
+end

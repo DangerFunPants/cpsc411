@@ -1,0 +1,73 @@
+To run the context free grammar vital statistic checker
+you will need the following alias:
+
+alias CFG '/usr/local/sml/bin/sml @SMLload=/home/411/CFG/CFG-stats.sparc-solaris'
+
+You can then call the CFG-VSC by:
+
+CFG <filename>
+
+The format for a context free grammar is as follows:
+
+(a) Terminal are strings of uppercase letter such as 
+
+     LPAR RPAR STOP ADD SUB ...
+     
+(b) Non terminals are lowercase strings such as 
+
+     start expr rest factor ....
+
+    you may also include upper case letters, numbers, and "_" so long 
+    as the first character is lowercase.  Furthermore the string 
+    can end with a series of "'"s or "+"s.
+
+(c) It is assumed that the start symbol is the first 
+    nonterminal whose productions are given.
+
+(d) The productions associated with a nonterminal 
+    are indicated as 
+    
+    <head> -> <RHS_1>
+            | <RHS_2>
+         ....
+            | <RHS_n>.
+    
+    where the alternative righthand sides of the productions 
+    are separated by a slash, "|", and terminated by a period.".".
+(e) The RHS of a production is a sequence of terminals 
+    or nonterminals separated by spaces.  For example:
+    
+              expr ADD expr
+(f) Multi-line comments are written      /*  many comments */
+    Single line comments are written     %   comment until end of line
+
+EXAMPLE:   
+
+An example grammar is:
+
+==========================================
+
+expr -> factor restfactor.
+restfactor -> ADD factor restfactor
+            | SUB factor restfactor
+            |.     
+factor -> LPAR expr RPAR
+        | term restterm.
+restterm -> MUL term restterm
+          | DIV term restterm.
+term -> SUB num
+      | num.
+num -> digits decdigits.
+digits -> DIGIT restdigits
+restdigits -> DIGIT restdigits
+            |.
+decdigits -> STOP digits.
+
+==========================================
+
+
+The context free grammar checker does more than get vital statistics 
+it also tries to transform your grammar by removing left recursion 
+and common left factors ... enjoy!
+      
+          

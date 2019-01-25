@@ -1,0 +1,23 @@
+
+data IntList
+    = #Nil
+    | #Cons of int * IntList;
+
+data Test
+    = #Random;
+
+fun f (a[] : int) : IntList
+{
+    var z : IntList;
+    var i : int;
+    case i of 
+    { 
+        #Nil => print 5 
+        | #Cons(h,rest) => print h
+    };
+
+    return z;
+};
+
+var a[2][2] : IntList;
+var z : int;

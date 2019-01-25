@@ -1,0 +1,30 @@
+/*
+    This program reads an integer and outputs all non-trivial factors of that 
+    integer.
+
+    Non trivial factors of n are:
+
+        { x | x not in {1,n} and n % x == 0 }
+*/
+
+begin
+    read n;
+    x:=2;
+    while (n-x) do
+        begin
+
+            quo:=n/x;
+            check:=x*quo;
+            notFactor:=n-check;
+
+            if notFactor then
+                begin
+                end
+            else
+                begin
+                    print x;
+                end;
+
+            x:=x+1;
+        end;
+end

@@ -1,0 +1,34 @@
+var x:intlist;
+var y:intlist;
+data intlist = #nil | #cons of int * intlist;
+
+fun writeInts (xs : intlist) : bool
+{
+  var retVal : bool;
+  case xs of
+  {
+    #nil => retVal := true
+    | #cons(head, tail) => 
+      {
+        print head;
+        retVal := writeInts(tail);
+      }
+  };
+  return retVal;
+};
+
+fun append(a:intlist,b:intlist):intlist
+    { var z:intlist;
+      case a of { #nil => z:= b
+                | #cons(v,L) => z:=#cons(v,append(L,b)) };
+      return z;
+    };
+
+var b : bool;
+begin
+
+   x:= #cons(1,#cons(2,#nil())); y:= #cons(3,#cons(4,#nil()));
+   x:= append(x,y);                    % to illustrate a call 
+  b := writeInts(x); 
+
+end

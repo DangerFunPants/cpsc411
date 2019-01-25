@@ -1,0 +1,6 @@
+while x do
+begin
+    x:=0;
+    if x then x:=10 else x:=20;
+end;
+end

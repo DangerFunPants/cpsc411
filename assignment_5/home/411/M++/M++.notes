@@ -1,0 +1,352 @@
+
+Implementation notes on M++
+===============================================================
+
+Author: Robin Cockett
+Date: 6th Feb 2002
+
+===============================================================
+
+The purpose of these notes is to provide an implementation 
+commentary for m++.  As for m+ the steps in compiling the 
+language consist of:
+
+(a) Building an internal syntax tree
+(b) Building the internal representation of the program 
+    which consists of a tree in which all type and variable 
+    names have been removed
+(c) Generating the am code for the program.
+
+
+Parsing to syntax tree:
+=======================
+
+
+The syntax tree for m++ is the following sml datatype:
+
+datatype M_prog = m_prog of (M_decl list) * (M_stmt list)
+     and M_decl = m_var of string * M_type
+                | m_fun of string * ((string * M_type ) list) * M_type 
+                              *  (M_decl list) * (M_stmt list)
+                | m_typ of string * (string * M_type list) list
+     and M_stmt = m_ass of string * M_expr
+                | m_while of M_expr * M_stmt
+                | m_cond of M_expr * M_stmt * M_stmt 
+                | m_read of string
+                | m_print of M_expr
+                | m_return of M_expr
+                | m_block of (M_decl list) * (M_stmt list)
+                | m_case of M_expr * (string * string list * M_stmt) list
+     and M_type = m_int | m_bool | m_char | m_data of string
+     and M_expr = m_num of int
+                | m_bl of bool
+                | m_id of string
+                | m_ch of char
+                | m_app of M_operation * (M_expr list)
+     and M_operation 
+                = m_fn of string
+                | m_cid of string 
+                | m_add | m_mul | m_sub | m_div | m_neg
+                | m_lt | m_le | m_gt | m_ge | m_eq | m_not | m_and | m_or;
+
+
+It was necessary to augment the m+ syntax tree with the new "data" 
+declarations, the application of constructors ("cid" operations), 
+for the "case" statement, and for character arithmetic.  
+
+The grammar is LALR(1) (and can actually be easily transformed to LL(1)) 
+so we may use Yacc with actions to build the syntax tree.
+
+The symbol table:
+================
+
+There is one significantly new aspect to the symbol table:  we need to be 
+able to store user defined types and their definition.  In the dance of the 
+symbol table there are now three "passes": the first pass picks up the 
+user defined types, the second the actual definitions of the types (which are 
+checked) and the types of the variables and functions, the third then uses 
+the symbol table so developed.  This allows one to define mutually recursive 
+data provided all the data definitions are at the same level.
+
+When we add the constructor definitions not only must we add them as a 
+function (with associated types) but also as part of the data definition.  
+The function definition is then used to type check assignments such as 
+the assignment to x in the following:
+
+           data intlist = #cons of int * intlist
+                        | #nil;
+
+           var x : intlist;
+
+           x := #cons(1,#cons(2,#cons(3,#nil)));
+
+However, in the case construct as used in the code below we have to 
+check that the set of constructors used in the case correspond exactly to 
+the set of constructors associated with the type. Thus, with the new 
+type we must store the list of constructors.
+
+           fun sum(x: intlist):int
+           { var z: intlist;
+             begin
+                case x of #nil => z:= 0
+                        | #cons(n,L) => z:= n+sum(L);
+                return z;
+             end };
+
+           x:= #cons(sum x,x);
+
+These considerations lead to the following specification of the symbol 
+table interface for the symbol table inputs and outputs:
+
+(these are held in the structure "mM_sig") 
+
+datatype SYM_DESC = ARGUMENT of string * M_type 
+                  | VARIABLE of string * M_type
+                  | FUNCTION of string * M_type list * M_type
+                  | DATATYPE of string 
+                  | CONSTRUCTOR of string * M_type list * string;
+
+datatype SYM_I_DESC = I_VARIABLE of int * int * M_type
+                    | I_FUNCTION of int * string * M_type list * M_type
+                    | I_CONSTRUCTOR of int * M_type list * M_type
+                    | I_TYPE of string * string list;
+
+datatype LEVEL_TYPES = L_FUN of string * M_type | L_PROG 
+                     | L_BLK | L_CASE;
+
+
+The actual details of the symbol table are encapsulated in a 
+structure which has a specifed interface (so one can easily 
+return and write a really efficient symbol table). In fact, 
+the functions for the symbol table are essentially the same 
+as for m+.
+
+I have removed the "remove_scope" function as this is not 
+necessary in the functional code which has automatic garbage 
+collection.  However I have added three functions to provide 
+needed information about the current scope.
+
+signature SYMBOL_TABLE =
+sig 
+   exception SYM_ERROR of string
+   type ST
+   val empty: unit -> ST
+   val new_scope: mM_sig.LEVEL_TYPES * ST -> ST
+   val insert: ST * mM_sig.SYM_DESC -> ST
+   val lookup: ST * string -> mM_sig.SYM_I_DESC
+   val scope_size: ST -> int
+   val scope_args: ST -> int
+   val scope_type: ST -> mM_sig.LEVEL_TYPES
+end;
+
+When a constructor, a function, or even simply a variable and its type 
+is inserted in the symbol table it is now necessary to check that the 
+types it uses are already defined.  Thus, we first check the output 
+and argument types and then add the constructor;  when we check the 
+output type we also add this constructor to that type.
+
+
+Intermediate representation
+===========================
+
+The intermediate representation is almost the same as that of m+: 
+as before the declarations are stripped out and we are left with 
+the code bodies with all the variables resolved.  The only changes 
+we have to make concern the addition of characters as a primitive 
+type (print, read, comparisons) and the case statement and constructor 
+functions.
+
+datatype I_prog = iPROG of (I_fbody list) * int * (I_stmt list)
+     and I_fbody = iFUN of string *  (I_fbody list) * int * int * (I_stmt list)
+     and I_stmt = iASS of int * int * I_expr
+                | iWHILE of I_expr * I_stmt
+                | iCOND of I_expr * I_stmt * I_stmt
+                | iCASE of I_expr * (int * int * I_stmt) list
+                | iREAD_C of (int*int)
+                | iPRINT_C of I_expr
+                | iREAD_B of (int*int)
+                | iPRINT_B of I_expr
+                | iREAD_I of (int*int)
+                | iPRINT_I of I_expr
+                | iRETURN of I_expr
+                | iBLOCK of (I_fbody list) * int *(I_stmt list)
+     and I_expr = iNUM of int
+                | iBOOL of bool
+                | iCHAR of char
+                | iID of (int * int)
+                | iAPP of I_opn * (I_expr list)
+     and I_opn = iCALL of string * int
+               | iCONS of int * int
+               | iADD | iMUL | iSUB | iDIV | iNEG
+               | iLT_I  | iLE_I  | iGT_I  | iGE_I  | iEQ_I
+               | iLT_C  | iLE_C  | iGT_C  | iGE_C  | iEQ_C 
+               | iNOT | iAND | iOR;
+
+
+In generating the intermediate representation the tricky aspect is the 
+manner in which the symbol table must be built up.  It must "go round" 
+the decarations three times: the first time to pick up the data declarations 
+the second time to pick up the variable, function, and constructor 
+declarations and the third time to elaborate the function bodies.
+
+
+AM code generation
+==================
+
+The new aspects involve the "case" and the construction of data cells.
+Suppose we wish to create a cell with three arguments (loaded onto the 
+stack) with index 2 (that is it is the second constructor).  We do the 
+following:
+
+              LOAD_I 2         %  put the index on the stack
+              STORE_H 4        %  create a cell filled with 
+                               %  the top four stack values
+
+This will leave a pointer to the heap cell on top of the stack.
+
+Next to accomplish the "case" we first load the pointer to the cell 
+on which we will be switching next we load the contents of the cell 
+onto the top of the stack.  The first value of this cell will be 
+the index of the constructor.  This we use to do a variable jump:
+
+               ...
+
+             LOAD_O m          % the pointer to the cell is loaded
+             LOAD_H            % the contents of the cell is loaded
+             JUMP_O            % jump the number of steps indicated 
+                               % by the top of stack value (the cell index)
+             JUMP code1
+             JUMP code2
+                ...            % the jump table
+             JUMP coden
+code1:
+                ...            % code for first case
+
+             JUMP code0        
+code2:
+                ...            % code for second case
+
+             JUMP code0
+
+                ...
+coden: 
+                ...
+
+             JUMP code0
+code0
+                ....           % code after case
+
+Notice there are some simple optimizations possible to reduce 
+the number of jumps: 
+(a) The last case need not have a JUMP code0 as it will fall 
+through anyway.
+(b) If the first code is for the last case then we can jump 
+straight into the code.
+
+
+EXAMPLE
+=======
+
+/*
+
+    This program appends two lists together ...
+
+                                                 */
+%  Datatype for lists of integers ...
+var x:intlist;
+var y:intlist;
+data intlist = #nil | #cons of int * intlist;
+
+fun append(a:intlist,b:intlist):intlist
+    { var z:intlist;
+      begin
+         case a of #nil => z:= b
+                 | #cons(v,L) => z:=#cons(v,append(L,b)) ;
+         return z;
+      end
+    };
+
+begin
+
+   x:= #nil(); y:= #nil();
+   x:= append(x,y);                    % to illustrate a call 
+
+end
+
+
+Here is the code this generates:
+
+/*  The am code for the append program ...
+
+      LOAD_R %sp
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 2                     %  space for two variables
+      LOAD_I 2                    %  creating the index for nil          
+      STORE_H 1                   %  creating a heap reference to a nil
+      LOAD_R %fp
+      STORE_O 1                   %  Storing the nil in the first location
+                                  %  in the frame.
+      LOAD_I 2
+      STORE_H 1                   %  creating another nil cell  
+      LOAD_R %fp
+      STORE_O 2                   %  Storing this nil in the second location
+                                  %  in the frame.
+      LOAD_R %fp
+      LOAD_O 1
+      LOAD_R %fp
+      LOAD_O 2                    %  loading arguments for function call
+      ALLOC 1                     %  space for a return value
+      LOAD_R %fp                  %  access pointer
+      LOAD_R %fp                  %  old frame pointer
+      LOAD_R %cp                  %  return code pointer
+      JUMP fn1                    %  jump to function
+      LOAD_R %fp
+      STORE_O 1
+      ALLOC -3
+      HALT
+fn1:
+      LOAD_R %sp
+      STORE_R %fp
+      ALLOC 1
+      LOAD_R %fp
+      LOAD_O -5               %  loading pointer to the list cell
+      LOAD_H                  %  loading contents 
+      JUMP_O                  %  jump ahead depending on constructor index
+      JUMP case2              %
+      JUMP case3              %  jump table
+case2:                        %  cons case 
+      LOAD_R %fp
+      LOAD_O 3
+      LOAD_R %fp
+      LOAD_O 2
+      LOAD_R %fp
+      LOAD_O -4
+      ALLOC 1
+      LOAD_R %fp              % access link (note use of access!)
+      LOAD_O -2
+      LOAD_R %fp              % old frame pointer  
+      LOAD_R %cp
+      JUMP fn1                % recursive call
+      LOAD_I 1
+      STORE_H 3               % creating a cons cell
+      LOAD_R %fp
+      STORE_O 1
+      JUMP case4
+case3:                        % code for nil case
+      LOAD_R %fp
+      LOAD_O -4
+      LOAD_R %fp
+      STORE_O 1
+      JUMP case4
+case4:                        % end of case 
+      LOAD_R %fp
+      LOAD_O 1
+      LOAD_R %fp
+      STORE_O -5
+      ALLOC -1
+      LOAD_R %fp
+      STORE_O -4              %  store return value 
+      STORE_R %fp
+      ALLOC -2
+      JUMP_S             

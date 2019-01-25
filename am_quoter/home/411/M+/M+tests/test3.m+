@@ -1,0 +1,6 @@
+var x:bool;
+fun f(a:bool,b:bool):bool
+   {begin return true; end};
+begin
+   x := f(x,x); print x;
+end

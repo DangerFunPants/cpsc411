@@ -1,0 +1,30 @@
+/*
+    This program reads in an integer and outputs 1 if the integer is 
+    prime, 0 if the integer is composite.
+*/
+
+begin
+
+read n;
+x:=2;
+isPrime:=1; % assume that the number is prime.
+
+while n-x do
+    begin
+        quo:=n/x;
+        checkVal:=quo*x;
+        notFactor:=n-checkVal; % will be zero if n % x == 0 which implies that n is not prime
+        if notFactor then 
+            begin
+                x:=x+1; % inc counter
+            end
+        else
+            begin
+                x:=n;
+                isPrime:=0;
+            end;
+    end;
+
+print isPrime;
+
+end

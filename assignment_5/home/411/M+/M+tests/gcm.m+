@@ -1,0 +1,25 @@
+/*  Greatest common multiple of two numbers.  */
+
+
+var x:int;
+var y:int;
+fun positive(x:int):bool
+    { begin return x >= 0; end };
+fun gcm(x:int,y:int):int
+    { fun gcd(x:int,y:int):int
+          { var z:int;
+            begin 
+            if x =< y then 
+            { begin if x = y then z:= x
+                    else z:= gcd(x,y-x); end }
+            else z:= gcd(x-y,x);
+            return z;
+          end };
+      begin return x*y/gcd(x,y); end };
+      
+begin 
+  read x; read y;
+  if positive(x) && positive(y) 
+  then print gcm(x,y)
+  else print false;
+end

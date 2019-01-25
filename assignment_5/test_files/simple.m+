@@ -1,0 +1,11 @@
+var x[2] : int;
+var y[3][3] : int;
+
+fun testFn (z[][], x[] : int) : int
+{
+    print x[5];
+    return z[2][5];
+};
+
+
+print x;

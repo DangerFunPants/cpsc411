@@ -1,0 +1,40 @@
+/*
+    m+ program to calculate the average and variance 
+    (to nearest integer) of a set of positive numbers terminated by 
+    0.
+ */
+
+var vr :int;
+var sum : int;
+var count :int;
+var flag: int;
+fun variance(av:int,vr:int,cnt:int):int
+    {begin return vr/cnt - sqr(average(av,cnt)); end};
+fun average(av:int,cnt:int):int
+    {begin return (av/cnt); end};
+fun sqr(x:int):int
+    {begin return x*x; end}; 
+
+begin
+   count := 0;
+   flag := 0;
+   sum := 0;
+   vr := 0;
+   while flag = 0 do 
+   {var num: int;
+    begin
+      read num;
+      if not(num=0) then
+       {begin count := count + 1;
+              sum := sum + num;
+              vr := vr + sqr(num);
+        end}
+      else flag := 1;
+    end};
+    print average(sum,count);
+    print variance(sum,vr,count);
+end
+
+      
+     
+   

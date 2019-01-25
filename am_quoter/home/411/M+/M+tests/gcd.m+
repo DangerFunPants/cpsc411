@@ -1,0 +1,22 @@
+/*  Greatest common divisor of two numbers.  */
+
+
+var x:int;
+var y:int;
+fun positive(x:int):bool
+    { begin return x >= 0; end };
+fun gcd(x:int,y:int):int
+    { var z:int;
+      begin 
+        if x =< y then 
+        { begin if x = y then z:= x
+                else z:= gcd(x,y-x); end }
+        else z:= gcd(x-y,x);
+        return z;
+      end };
+begin 
+  read x; read y;
+  if positive(x) && positive(y) 
+  then print gcd(x,y)
+  else print false;
+end

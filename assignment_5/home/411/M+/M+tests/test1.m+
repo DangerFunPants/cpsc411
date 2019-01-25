@@ -1,0 +1,6 @@
+var x:bool;
+begin
+  read x;
+  x:= x + 1;
+  print x;
+end

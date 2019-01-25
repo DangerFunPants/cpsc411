@@ -1,0 +1,74 @@
+/* 
+ *   Program for sorting lists of integers.
+ *   
+ */
+ 
+ 
+ data listint = #CONS of int * listint
+              | #NIL;
+ 
+ var xs: listint;
+ var a: bool;
+ 
+ fun readints():listint
+     { var x:int; var z:listint;
+       begin 
+         read x;
+         if x = 0 then z:= #NIL()
+                  else z:= #CONS(x,readints());
+         return z;
+       end };
+ 
+ fun writeints(z:listint):bool
+     { var a: bool;
+       begin
+         case z of { #NIL => a:= true
+                   | #CONS(x,y) => 
+              { begin 
+                print x;
+                a:= writeints(y);
+              end}};
+       return a;
+       end };
+ 
+ fun merge(x:listint,y:listint):listint
+     { var z:listint;
+       begin
+         case x of { #NIL => z:= y
+                   | #CONS(xh,xt) =>
+             { begin 
+                case y of { #NIL => z:= x
+                          | #CONS(yh,yt) =>
+                if xh<yh then z:= #CONS(xh,merge(xt,y))
+                         else z:= #CONS(yh,merge(x,yt)) };
+               end }};
+         return z;
+      end };
+      
+ fun odd(x:listint):listint
+     { var z:listint;
+       begin 
+         case x of { #NIL => z:= x 
+                   | #CONS(v,tx) => z:= even(tx)};
+         return z;
+       end };
+       
+ fun even(x:listint):listint
+     { var z:listint;
+       begin 
+         case x of { #NIL => z:= x 
+                   | #CONS(x,tx) => z:= #CONS(x,odd(tx)) };
+         return z;
+       end };
+       
+ fun quicksort(z:listint):listint
+     { begin 
+         return merge(quicksort(odd(z)),quicksort(even(z))); 
+       end };
+
+begin 
+   xs:= readints();
+   xs:= quicksort(xs);
+   a:= writeints(xs);
+end 
+          

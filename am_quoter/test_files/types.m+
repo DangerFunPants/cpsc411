@@ -1,0 +1,11 @@
+
+fun printPair(a,b : int) : int
+{
+    print a;
+    print b;
+    return 0;
+};
+
+var v : int;
+
+v := printPair(1,2);

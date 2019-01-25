@@ -1,0 +1,7 @@
+var x,y : int;
+fun max(a,b:int):int
+   { var z:int;
+     if a > b then z:=a else z:=b;
+     return z;
+   };
+read x; read y print max(x,y); 

@@ -1,0 +1,58 @@
+================================================================================
+CPSC 411 - ASSIGNMENT TWO
+================================================================================
+
+The root directory of the project is structured as follows: 
+
+ROOT DIR
+├── alex
+│   └── minisculus.x
+├── compileAll.sh
+├── makefile
+├── README.md
+├── run.sh
+├── src
+│   ├── ast.hs
+│   ├── mcc.hs
+│   ├── minisculusCodeGen.hs
+│   └── minisculusParser.hs
+├── stack_asm
+├── stack_machine
+│   └── stack_impl.csh
+├── test_files
+│   ├── comments.mn
+│   ├── factorial.mn
+│   ├── factor.mn
+│   ├── fib.mn
+│   ├── mersenne.mn
+│   ├── perfect.mn
+│   ├── prime.mn
+│   └── test_simple.mn
+
+The src directory contains the haskell source files that implement the parsing and code genreation for the minisculus language. The alex directory contains the alex file that implements the lexer for minsculus.  
+
+================================================================================
+BUILDING THE APPLICAITON
+================================================================================
+
+Building the application requires alex, ghc and make to be on the path. To build type:
+
+    make
+
+This will output the application binary into the root directory of the project.
+
+================================================================================
+RUNNING THE APPLICATION
+================================================================================
+
+The compiler reads the input source file from stdin, writes the stack machine code to a file whose name is specified by a command line parameter and pretty prints the syntax tree for the program being compiled to stdout. Thus the compiler is invoked as follows: 
+
+    ./mcc out_file_name < path/to/minisculus/source
+
+Note the use of stream redirection to pipe the contents of the minisculus source file to stdin of the minisculus compiler.
+
+================================================================================
+SHELL SCRIPTS
+================================================================================
+
+The run.sh shell script in the project root directory will execute stack machine code read from a file that is passed in as a command line argument. The compileAll shell script will compile all .mn files in a particular directory that is passed in as a command line parameter. The compile all script will write the stack machine code to a file in the stack_asm directory in the project root with the same name as the input file suffixed with ".a". A selection of test minisculus programs can be found in the test_files directory in the project root.

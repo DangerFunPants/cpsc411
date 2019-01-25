@@ -1,0 +1,35 @@
+% My provided test #2
+
+/*
+    This file tests mutual recursion for potentially large number of recursive calls
+    The user may enter an int and the output will be whether than number was even or not.
+*/
+
+var x:int;
+
+fun f_even(z:int):bool
+{
+    var b:bool;
+    begin
+        if z = 0
+        then b := true
+        else b := not f_odd(z - 1);
+        return b;
+    end
+};
+
+fun f_odd(z:int):bool
+{
+    var b:bool;
+    begin
+        if z = 0
+        then b := true 
+        else b := not f_even(z - 1);
+        return b;
+    end
+};
+
+begin
+    read x;
+    print f_even(x);
+end
